@@ -1,10 +1,13 @@
-language: bash
+sudo: required
+
+language: ruby
 services: docker
 
 env:
   - VERSION=5.6 VARIANT=
 
 install:
+  - gem install serverspec
   - git clone https://github.com/docker-library/official-images.git ~/official-images
 
 before_script:
@@ -15,6 +18,9 @@ before_script:
 script:
   - docker build -t "$image" "${VARIANT:-.}"
   - ~/official-images/test/run.sh "$image"
+  - docker run --name php56-module-test loliee/docker-php:5.6 php -m > /tmp/modules_list
+  - cd $TRAVIS_BUILD_DIR
+  - rspec ./tests/php56_spec.rb
 
 after_script:
   - docker images
