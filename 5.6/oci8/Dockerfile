@@ -1,4 +1,4 @@
-FROM loliee/php:5.6
+FROM loliee/docker-php:5.6
 
 ENV ORACLE_PATH /usr/local/lib/oracle
 ENV ORACLE_HOME $ORACLE_PATH/instantclient_11_2
