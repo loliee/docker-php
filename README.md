@@ -76,6 +76,7 @@ docker build -t loliee/docker-php:5.6-oci8
 ## Extensions
 Setup with the following extensions:
 
+ - `bcmath`
  - `bz2`
  - `ctype`
  - `curl`
