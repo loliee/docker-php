@@ -7,6 +7,7 @@ describe command('docker run --rm --name php56-version"$(date +%s)" loliee/docke
 end
 
 describe command('docker run --name php56-module-test"$(date +%s)" loliee/docker-php:5.6 php -m') do
+    its(:stdout) { should match /bcmath/ }
     its(:stdout) { should match /bz2/ }
     its(:stdout) { should match /ctype/ }
     its(:stdout) { should match /curl/ }
