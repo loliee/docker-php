@@ -3,7 +3,7 @@ require 'serverspec'
 set :backend, :exec
 
 describe command('docker run --rm --name php56-version"$(date +%s)" loliee/docker-php:5.6 php -v') do
-    its(:stdout) { should match /PHP 5.6.20/ }
+    its(:stdout) { should match /PHP 5.6.21/ }
 end
 
 describe command('docker run --name php56-module-test"$(date +%s)" loliee/docker-php:5.6 php -m') do
