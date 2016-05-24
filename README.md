@@ -22,7 +22,7 @@ $ docker run -it --rm --name my-running-script -v "$PWD":/usr/src/myapp -w /usr/
 Some functions to put in your `.zshrc` or `bashrc`.
 
 ```bash
-PHP_DOCKER=${PHP_DOCKER:='loliee/docker-php:5.6'}
+PHPD=${PHPD:='php:5.6'}
 
 function phpd(){
   if  [[ $1 == /* ]]; then MOUNT=$(dirname "$1"); else MOUNT=$PWD; fi
@@ -31,16 +31,23 @@ function phpd(){
   unset MOUNT
 }
 
-function composerd(){
-  if  [[ $1 == /* ]]; then MOUNT=$(dirname "$1"); else MOUNT=$PWD; fi
-  eval "$(docker-machine env dev)"
-  NAME=$(echo "$PHPD"-composer-"$@"-"$(gdate +%s%N)" | sed "s/[^a-zA-Z0-9_.-]/_/g")
-  docker run -ti --rm --name "$NAME" -v "$MOUNT":"$MOUNT" -w "$MOUNT" "$PHPD" php -n \
-             -dtimezone=Europe/Paris -dextension=bz2.so -dextension=ftp.so -dextension=intl.so \
-             -dextension=mysql.so -dextension=redis.so -dextension=soap.so -dextension=tidy.so \
-             -dextension=pcntl.so -dextension=pgsql.so -dextension=xsl.so -dextension=zip.so \
-             -dmemory_limit=-1 /usr/local/bin/composer.phar "$@"
-  unset MOUNT NAME
+function composerd() {
+  local args="$*"
+  local name="$PHPD-composer-$args"
+  if hash gdate &>/dev/null; then
+    name="$name"-"$(gdate +%s%N)"
+  else
+    name="$name"-"$(gdate +%sN)"
+  fi
+  # shellcheck disable=SC2001
+  name="$(echo "$name" | sed "s/[^a-zA-Z0-9_.-]/_/")"
+  if  [[ $1 == /* ]]; then mount=$(dirname "$1"); else mount=$PWD; fi
+  docker run -ti --rm --name "$name" -v "$mount":"$mount" -w "$mount" loliee/docker-"$PHPD" php -n \
+    -dtimezone=Europe/Paris -dextension=bz2.so -dextension=ftp.so -dextension=intl.so \
+    -dextension=mysql.so -dextension=redis.so -dextension=soap.so -dextension=tidy.so \
+    -dextension=bcmath.so -dextension=pcntl.so -dextension=pgsql.so -dextension=xsl.so -dextension=zip.so \
+    -dmemory_limit=-1 /usr/local/bin/composer.phar "$@"
+  unset mount name
 }
 ```
 
